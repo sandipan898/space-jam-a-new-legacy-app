@@ -1,7 +1,7 @@
 // A map of playerName to an array of playerPER values
 var playerMap = new Map();
 
-// Variables to keep track of constants
+// Variables to keep track of constants 
 const maxPlayersOnCourt = 5;
 const numQuarters = 4;
 
@@ -10,28 +10,29 @@ var currentQuarter = 0;
 var playersOnCourt = 0;
 var quarterInPlay = false;
 
-// Variables to track PER throughout the game
+// Variables to track the PER throughout the game
 var quarterPER = 0;
 var quarterAvePER = 0;
 var totalAvePER = 0;
 
-// Function to read in all the player stats
+// Function to read in all of the player stats
 function processPlayers(allPlayerStats) {
     // Split the data by newline into an array.
     var allPlayerStatLines = allPlayerStats.split(/\r\n|\n/);
 
-    // Remove the header line (first line)
+    // remove the header line (first line)
     allPlayerStatLines.shift();
 
     // Loop through the 15 players and create a map entry of player name to player PER
     for (var statLine of allPlayerStatLines) {
         // Get all individual stat values
         var stats = statLine.split(',');
+
         // If it's just an empty line, skip it
         if (!stats || stats.length <= 1) continue; // empty line
 
         // The second column has the player name
-        var playerName = stats[nameIndex];
+        var playerName = stats[1];
 
         // check if player exists in map
         if (!playerMap.has(playerName)) {
@@ -40,7 +41,7 @@ function processPlayers(allPlayerStats) {
         }
 
         // Get per value for player
-        var per = parseFloat(stats[perIndex]);
+        var per = parseFloat(stats[9]);
 
         // Add per value to player's array (the next quarter)
         playerMap.get(playerName).push(per);
@@ -50,12 +51,12 @@ function processPlayers(allPlayerStats) {
     displayPlayerBench();
 }
 
-// Function to add the players to the bench to start the game.
+// Function to add the players to the bench to start the game
 function displayPlayerBench() {
     // Get the bench div in which the players will be shown.
     var bench = document.getElementById('playersOnBench');
 
-    // For each player, create a button. 
+    // For each player, create a button 
     for (let playerName of playerMap.keys()) {
         // Create a button for each player
         var newPlayer = document.createElement('button');
@@ -68,7 +69,7 @@ function displayPlayerBench() {
 
         // When the button is clicked, call the movePlayer function
         newPlayer.onclick = movePlayer;
-        
+
         // Add the players image to the button
         var playerImage = document.createElement('img');
 
@@ -78,7 +79,7 @@ function displayPlayerBench() {
         // Add the image to the button
         newPlayer.appendChild(playerImage);
 
-        // Add the button to the bench.
+        // Add the button to the bench
         bench.appendChild(newPlayer);
     }
 
@@ -135,22 +136,23 @@ function displayPlayerCards() {
     }
 }
 
-// This function is called each time a player button is selected. A player's
-// button being selected indicates that the player either moving to the
-// court or moving to the bench for a water break.
-function movePlayers() {
-    // Don't let the coach change players during a quarter.
+// This function is called each time a player button is clicked. A player
+// button being clicked indicates the players is either moving to the court
+// or to the bench for a water break
+function movePlayer() {
+    // Do not let the coach change players during a quarter
     if(quarterInPlay) {
         return;
     }
 
-    // Get the div where this button currently is (either bench or court).
+    // Get the div in which this button currently is (either bench or court).
     var parentDiv = this.parentElement;
 
     // Check whether the player is currently on the bench.
     if(parentDiv.id == 'playersOnBench') {
+
         // If there are already five players on the court, don't let the player
-        // move to the court, and alert the coach that there are enough players.
+        // move to the court; alert the coach that there are enough players.
         if(playersOnCourt >= maxPlayersOnCourt){
             alert('You can only have ' + maxPlayersOnCourt + ' players on the court at a time.');
         } else {
@@ -162,7 +164,7 @@ function movePlayers() {
             quarterAvePER = quarterPER / playersOnCourt;
             document.getElementById('currentPER').innerText = 'Current PER: '+ quarterAvePER.toPrecision(4);
             
-            // Move the player to the court.
+            // Move the player to the court
             document.getElementById('playersOnCourt').appendChild(this);
         }
     } else {
@@ -186,6 +188,7 @@ function movePlayers() {
         // Move the player to the bench.
         document.getElementById('playersOnBench').appendChild(this);
     }
+
 }
 
 // At the start of each quarter, do two things: 
@@ -239,7 +242,7 @@ function endQuarter() {
     totalAvePER += parseFloat(quarterAvePER.toPrecision(4));
 
     // Add the value to the display counter above the stats column.
-    document.getElementById('averagePER').innerText += quarterAvePER + ' + ';
+    document.getElementById('averagePER').innerText += quarterAvePER.toPrecision(4) + ' + ';
 
     // Progress to the next quarter.
     currentQuarter++;
